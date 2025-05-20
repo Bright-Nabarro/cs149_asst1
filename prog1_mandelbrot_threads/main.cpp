@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <getopt.h>
 
-#include "CycleTimer.h"
+#include "../common/CycleTimer.hpp"
 
 extern void mandelbrotSerial(
     float x0, float y0, float x1, float y1,
@@ -131,8 +131,9 @@ int main(int argc, char** argv) {
     for (int i = 0; i < 5; ++i) {
        memset(output_serial, 0, width * height * sizeof(int));
         double startTime = CycleTimer::currentSeconds();
-        mandelbrotSerial(x0, y0, x1, y1, width, height, 0, height, maxIterations, output_serial);
-        double endTime = CycleTimer::currentSeconds();
+		mandelbrotSerial(x0, y0, x1, y1, width, height, 0, height,
+						 maxIterations, output_serial);
+		double endTime = CycleTimer::currentSeconds();
         minSerial = std::min(minSerial, endTime - startTime);
     }
 
@@ -147,8 +148,9 @@ int main(int argc, char** argv) {
     for (int i = 0; i < 5; ++i) {
       memset(output_thread, 0, width * height * sizeof(int));
         double startTime = CycleTimer::currentSeconds();
-        mandelbrotThread(numThreads, x0, y0, x1, y1, width, height, maxIterations, output_thread);
-        double endTime = CycleTimer::currentSeconds();
+		mandelbrotThread(numThreads, x0, y0, x1, y1, width, height,
+						 maxIterations, output_thread);
+		double endTime = CycleTimer::currentSeconds();
         minThread = std::min(minThread, endTime - startTime);
     }
 

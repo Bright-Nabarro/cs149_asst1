@@ -5,6 +5,7 @@ CXXFLAGS=-I../common -Iobjs/ -O3 -std=c++11 -Wall -fPIC
 APP_NAME=mandelbrot
 OBJDIR=objs
 COMMONDIR=../common
+#COMMONDIR=.
 
 PPM_CXX=$(COMMONDIR)/ppm.cpp
 PPM_OBJ=$(addprefix $(OBJDIR)/, $(subst $(COMMONDIR)/,, $(PPM_CXX:.cpp=.o)))
@@ -31,5 +32,5 @@ $(OBJDIR)/%.o: %.cpp
 $(OBJDIR)/%.o: $(COMMONDIR)/%.cpp
 	$(CXX) $< $(CXXFLAGS) -c -o $@
 
-$(OBJDIR)/main.o: $(COMMONDIR)/CycleTimer.h
+$(OBJDIR)/main.o: $(COMMONDIR)/CycleTimer.hpp
 
