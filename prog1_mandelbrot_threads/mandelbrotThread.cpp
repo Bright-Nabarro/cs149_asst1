@@ -61,9 +61,9 @@ void workerThreadStart(WorkerArgs * const args) {
 	int startRow = args->startRow;
 	int totalRows = args->totalRows;
 
-	int endRow = std::min<int>(startRow + totalRows, args->height);
+	int endRow = totalRows;
 
-    for (int j = startRow; j < endRow; j++) {
+    for (int j = startRow; j < endRow; j += args->numThreads) {
         for (int i = 0; i < (int)args->width; ++i) {
             float x = args->x0 + i * dx;
             float y = args->y0 + j * dy;
@@ -97,7 +97,6 @@ void mandelbrotThread(
     std::thread workers[MAX_THREADS];
     WorkerArgs args[MAX_THREADS];
 
-	int splitSize = height / numThreads;
     for (int i=0; i<numThreads; i++) {
         // TODO FOR CS149 STUDENTS: You may or may not wish to modify
         // the per-thread arguments here.  The code below copies the
@@ -113,8 +112,8 @@ void mandelbrotThread(
         args[i].output = output;
       
         args[i].threadId = i;
-		args[i].startRow = i * splitSize;
-		args[i].totalRows = splitSize;
+		args[i].startRow = i;
+		args[i].totalRows = height;
     }
 
     // Spawn the worker threads.  Note that only numThreads-1 std::threads
