@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <thread>
+#include <vector>
 
 #include "CycleTimer.h"
 
@@ -188,6 +189,18 @@ void kMeansThread(double *data, double *clusterCentroids, int *clusterAssignment
   args.M = M;
   args.N = N;
   args.K = K;
+  args.start = 0;
+  args.end = K;
+
+  int threadNum = 16;
+  vector<WorkerArgs> th_args(threadNum);
+  int bias = K / threadNum;
+  for (int i = 0; i < K; ++i)
+  {
+      th_args[i].start = bias * i;
+      th_args[i].end = std::min(K, th_args[i].start + bias);
+  }
+  vector<std::thread> thds(threadNum);
 
   // Initialize arrays to track cost
   for (int k = 0; k < K; k++) {
@@ -202,12 +215,17 @@ void kMeansThread(double *data, double *clusterCentroids, int *clusterAssignment
     for (int k = 0; k < K; k++) {
       prevCost[k] = currCost[k];
     }
-
-    // Setup args struct
-    args.start = 0;
-    args.end = K;
-
-    computeAssignments(&args);
+	
+	for (int i = 1; i < threadNum; ++i)
+	{
+		thds[i] = std::thread(computeAssignments, &th_args[i]);
+	}
+    
+    computeAssignments(&th_args[0]);
+	for (int i = 1; i < threadNum; ++i)
+	{
+		thds[i].join();
+	}
     computeCentroids(&args);
     computeCost(&args);
 

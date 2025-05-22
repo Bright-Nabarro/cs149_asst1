@@ -2,6 +2,7 @@
 #include <thread>
 #include <cassert>
 #include <algorithm>
+#include <print>
 
 #include "../common/CycleTimer.hpp"
 
@@ -16,6 +17,7 @@ typedef struct {
     int numThreads;
 	int startRow;
 	int totalRows;
+	double spent;
 } WorkerArgs;
 
 
@@ -50,6 +52,7 @@ static inline int mandel(float c_re, float c_im, int count)
 // Thread entrypoint.
 void workerThreadStart(WorkerArgs * const args) {
 
+	//double startTime = CycleTimer::currentSeconds();
     // TODO FOR CS149 STUDENTS: Implement the body of the worker
     // thread here. Each thread should make a call to mandelbrotSerial()
     // to compute a part of the output image.  For example, in a
@@ -72,6 +75,8 @@ void workerThreadStart(WorkerArgs * const args) {
             args->output[index] = mandel(x, y, args->maxIterations);
         }
     }
+	double endTime = CycleTimer::currentSeconds();
+	//args->spent = (endTime - startTime)*1000;
 }
 
 //
@@ -114,6 +119,7 @@ void mandelbrotThread(
         args[i].threadId = i;
 		args[i].startRow = i;
 		args[i].totalRows = height;
+		//args[i].spent = std::numeric_limits<double>::max();
     }
 
     // Spawn the worker threads.  Note that only numThreads-1 std::threads
@@ -129,5 +135,10 @@ void mandelbrotThread(
     for (int i=1; i<numThreads; i++) {
         workers[i].join();
     }
+
+	//for (int i=0; i<numThreads; ++i)
+	//{
+	//	std::println("tid {} spent {:.2f} ms", args[i].threadId, args[i].spent); 
+	//}
 }
 

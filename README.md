@@ -276,6 +276,11 @@ the foreach loop to yield a more straightforward implementation.
 
 If you look into detailed technical material about the CPUs in the myth machines, you will find there are a complicated set of rules about how many scalar and vector instructions can be run per clock.  For the purposes of this assignment, you can assume that there are about as many 8-wide vector execution units as there are scalar execution units for floating point math.   
 
+##### answer
+编译运行以观察到当分型越发散: 亮暗越不均匀，加速比越低
+
+程序的性能瓶颈在于 ispc `mandel`内层的for循环, 亮暗不均匀导致for循环每次次数分布不均(必须要运行完最长的才能返回)
+
 ### Program 3, Part 2: ISPC Tasks (10 of 20 points) ###
 
 ISPCs SPMD execution model and mechanisms like `foreach` facilitate the creation
@@ -343,11 +348,29 @@ Note: This problem is a review to double-check your understanding, as it covers 
   single CPU core (no tasks) and when using all cores (with tasks). What 
   is the speedup due to SIMD parallelization? What is the speedup due to 
   multi-core parallelization?
+
+    **answer:** 
+    - 3.5 ~ 4 speedup for ISPC no tasks.
+    - 45 ~ 50 speedup for mutil-core parallelization.
+  
 2.  Modify the contents of the array values to improve the relative speedup 
   of the ISPC implementations. Construct a specifc input that __maximizes speedup over the sequential version of the code__ and report the resulting speedup achieved (for both the with- and without-tasks ISPC implementations). Does your modification improve SIMD speedup?
   Does it improve multi-core speedup (i.e., the benefit of moving from ISPC without-tasks to ISPC with tasks)? Please explain why.
+
+    **answer:** 
+    - 使用了 `1.1f + static_cast<float>(rand()) / RAND_MAX;`, 让每个值进行牛顿迭代法时收敛速度经可能保持
+    一致，同时引入了随机防止编译器优化。
+    - 最终得到了`8x`的ISPC加速比和`70x`的ISPC-tasks加速比
+![prog3 2](handout-images/prog3/2.png)
+    
 3.  Construct a specific input for `sqrt` that __minimizes speedup for ISPC (without-tasks) over the sequential version of the code__. Describe this input, describe why you chose it, and report the resulting relative performance of the ISPC implementations. What is the reason for the loss in efficiency? 
     __(keep in mind we are using the `--target=avx2` option for ISPC, which generates 8-wide SIMD instructions)__. 
+    **answer:** 
+    - 使用 `values[i] = i % 8 == 0 ? 10.f + rand() % 10 : 1.f;`利用ispc的向量特性让值为1的元素立刻收敛，
+    而其他元素一直占用着循环，导致ISPC版本比原始版本更慢
+    - 得到了`0.6x`ISPC加速比和`5x`ISPC-tasks加速比
+![prog3 3](handout-images/prog3/3.png)
+
 4.  _Extra Credit: (up to 2 points)_ Write your own version of the `sqrt` 
  function manually using AVX2 intrinsics. To get credit your 
     implementation should be nearly as fast (or faster) than the binary 
@@ -369,6 +392,12 @@ elements used. `saxpy` is a *trivially parallelizable computation* and features 
   ISPC (without tasks) and ISPC (with tasks) implementations of saxpy. What 
   speedup from using ISPC with tasks do you observe? Explain the performance of this program.
   Do you think it can be substantially improved? (For example, could you rewrite the code to achieve near linear speedup? Yes or No? Please justify your answer.)
+
+    **answer:**
+    - 1.82x speedup up
+    - No, 性能主要受限于内存带宽，所以即使有多个cpu，多个L1, L2缓存，但是共享一个L3缓存和内存条，
+    大规模顺序读写速度受内存本身读写速度限制。
+
 2. __Extra Credit:__ (1 point) Note that the total memory bandwidth consumed computation in `main.cpp` is `TOTAL_BYTES = 4 * N * sizeof(float);`.  Even though `saxpy` loads one element from X, one element from Y, and writes one element to `result` the multiplier by 4 is correct.  Why is this the case? (Hint, think about how CPU caches work.)
 3. __Extra Credit:__ (points handled on a case-by-case basis) Improve the performance of `saxpy`.
   We're looking for a significant speedup here, not just a few percentage 

@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <getopt.h>
 
-#include "CycleTimer.h"
+#include "CycleTimer.hpp"
 #include "mandelbrot_ispc.h"
 
 extern void mandelbrotSerial(

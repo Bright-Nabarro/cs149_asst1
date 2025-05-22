@@ -1,16 +1,18 @@
-#include "CS149intrin.h"
-#include "logger.h"
+#include "CS149intrin.hpp"
+#include "logger.hpp"
 
 //******************
 //* Implementation *
 //******************
 
-__cs149_mask _cs149_init_ones(int first) {
-  __cs149_mask mask;
-  for (int i=0; i<VECTOR_WIDTH; i++) {
-    mask.value[i] = (i<first) ? true : false;
-  }
-  return mask;
+__cs149_mask _cs149_init_ones(int first)
+{
+	__cs149_mask mask;
+	for (int i = 0; i < VECTOR_WIDTH; i++)
+	{
+		mask.value[i] = (i < first) ? true : false;
+	}
+	return mask;
 }
 
 __cs149_mask _cs149_mask_not(__cs149_mask &maska) {
@@ -60,7 +62,11 @@ void _cs149_vset(__cs149_vec<T> &vecResult, T value, __cs149_mask &mask) {
 template void _cs149_vset<float>(__cs149_vec_float &vecResult, float value, __cs149_mask &mask);
 template void _cs149_vset<int>(__cs149_vec_int &vecResult, int value, __cs149_mask &mask);
 
-void _cs149_vset_float(__cs149_vec_float &vecResult, float value, __cs149_mask &mask) { _cs149_vset<float>(vecResult, value, mask); }
+void _cs149_vset_float(__cs149_vec_float& vecResult, float value,
+					   __cs149_mask& mask)
+{
+	_cs149_vset<float>(vecResult, value, mask);
+}
 void _cs149_vset_int(__cs149_vec_int &vecResult, int value, __cs149_mask &mask) { _cs149_vset<int>(vecResult, value, mask); }
 
 __cs149_vec_float _cs149_vset_float(float value) {
@@ -91,17 +97,22 @@ void _cs149_vmove_float(__cs149_vec_float &dest, __cs149_vec_float &src, __cs149
 void _cs149_vmove_int(__cs149_vec_int &dest, __cs149_vec_int &src, __cs149_mask &mask) { _cs149_vmove<int>(dest, src, mask); }
 
 template <typename T>
-void _cs149_vload(__cs149_vec<T> &dest, T* src, __cs149_mask &mask) {
-  for (int i=0; i<VECTOR_WIDTH; i++) {
-    dest.value[i] = mask.value[i] ? src[i] : dest.value[i];
-  }
-  CS149Logger.addLog("vload", mask, VECTOR_WIDTH);
+void _cs149_vload(__cs149_vec<T>& dest, T* src, __cs149_mask& mask)
+{
+	for (int i = 0; i < VECTOR_WIDTH; i++)
+	{
+		dest.value[i] = mask.value[i] ? src[i] : dest.value[i];
+	}
+	CS149Logger.addLog("vload", mask, VECTOR_WIDTH);
 }
 
 template void _cs149_vload<float>(__cs149_vec_float &dest, float* src, __cs149_mask &mask);
 template void _cs149_vload<int>(__cs149_vec_int &dest, int* src, __cs149_mask &mask);
 
-void _cs149_vload_float(__cs149_vec_float &dest, float* src, __cs149_mask &mask) { _cs149_vload<float>(dest, src, mask); }
+void _cs149_vload_float(__cs149_vec_float& dest, float* src, __cs149_mask& mask)
+{
+	_cs149_vload<float>(dest, src, mask);
+}
 void _cs149_vload_int(__cs149_vec_int &dest, int* src, __cs149_mask &mask) { _cs149_vload<int>(dest, src, mask); }
 
 template <typename T>
@@ -203,17 +214,25 @@ void _cs149_vgt_float(__cs149_mask &maskResult, __cs149_vec_float &veca, __cs149
 void _cs149_vgt_int(__cs149_mask &maskResult, __cs149_vec_int &veca, __cs149_vec_int &vecb, __cs149_mask &mask) { _cs149_vgt<int>(maskResult, veca, vecb, mask); }
 
 template <typename T>
-void _cs149_vlt(__cs149_mask &maskResult, __cs149_vec<T> &veca, __cs149_vec<T> &vecb, __cs149_mask &mask) {
-  for (int i=0; i<VECTOR_WIDTH; i++) {
-    maskResult.value[i] = mask.value[i] ? (veca.value[i] < vecb.value[i]) : maskResult.value[i];
-  }
-  CS149Logger.addLog("vlt", mask, VECTOR_WIDTH);
+void _cs149_vlt(__cs149_mask& maskResult, __cs149_vec<T>& veca,
+				__cs149_vec<T>& vecb, __cs149_mask& mask)
+{
+	for (int i = 0; i < VECTOR_WIDTH; i++)
+	{
+		maskResult.value[i] = mask.value[i] ? (veca.value[i] < vecb.value[i])
+											: maskResult.value[i];
+	}
+	CS149Logger.addLog("vlt", mask, VECTOR_WIDTH);
 }
 
-template void _cs149_vlt<float>(__cs149_mask &maskResult, __cs149_vec_float &veca, __cs149_vec_float &vecb, __cs149_mask &mask);
+template void _cs149_vlt<float>(__cs149_mask& maskResult, __cs149_vec_float& veca, __cs149_vec_float& vecb, __cs149_mask& mask);
 template void _cs149_vlt<int>(__cs149_mask &maskResult, __cs149_vec_int &veca, __cs149_vec_int &vecb, __cs149_mask &mask);
 
-void _cs149_vlt_float(__cs149_mask &maskResult, __cs149_vec_float &veca, __cs149_vec_float &vecb, __cs149_mask &mask) { _cs149_vlt<float>(maskResult, veca, vecb, mask); }
+void _cs149_vlt_float(__cs149_mask& maskResult, __cs149_vec_float& veca,
+					  __cs149_vec_float& vecb, __cs149_mask& mask)
+{
+	_cs149_vlt<float>(maskResult, veca, vecb, mask);
+}
 void _cs149_vlt_int(__cs149_mask &maskResult, __cs149_vec_int &veca, __cs149_vec_int &vecb, __cs149_mask &mask) { _cs149_vlt<int>(maskResult, veca, vecb, mask); }
 
 template <typename T>

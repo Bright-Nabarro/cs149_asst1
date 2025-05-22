@@ -1,5 +1,5 @@
-#include "logger.h"
-#include "CS149intrin.h"
+#include "logger.hpp"
+#include "CS149intrin.hpp"
 
 void Logger::addLog(const char * instruction, __cs149_mask mask, int N) {
   Log newLog;
